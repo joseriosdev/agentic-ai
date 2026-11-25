@@ -37,3 +37,23 @@ export const ITEM_TYPE_TEXT_COLORS: Record<ItemTypeName, string> = {
   image: "text-image",
   link: "text-link",
 };
+
+export const ITEM_TYPE_ACCENT_CLASSES: Record<ItemTypeName, string> = {
+  snippet: "border-l-snippet",
+  prompt: "border-l-prompt",
+  command: "border-l-command",
+  note: "border-l-note",
+  file: "border-l-file",
+  image: "border-l-image",
+  link: "border-l-link",
+};
+
+export const ITEM_TYPE_BG_CLASSES: Record<ItemTypeName, string> = {
+  snippet: "bg-snippet/10",
+  prompt: "bg-prompt/10",
+  command: "bg-command/10",
+  note: "bg-note/10",
+  file: "bg-file/10",
+  image: "bg-image/10",
+  link: "bg-link/10",
+};

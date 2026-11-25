@@ -19,6 +19,33 @@ export interface SidebarUser {
   email: string;
 }
 
+export interface DashboardStats {
+  totalItems: number;
+  totalCollections: number;
+  favoriteItems: number;
+  favoriteCollections: number;
+}
+
+export interface DashboardCollection {
+  id: string;
+  name: string;
+  description: string;
+  href: string;
+  itemCount: number;
+  isFavorite: boolean;
+}
+
+export interface DashboardItem {
+  id: string;
+  title: string;
+  description: string;
+  typeName: ItemTypeName;
+  tags: string[];
+  isFavorite: boolean;
+  isPinned: boolean;
+  createdAt: Date;
+}
+
 export interface SidebarData {
   types: SidebarItemType[];
   favoriteCollections: SidebarCollection[];

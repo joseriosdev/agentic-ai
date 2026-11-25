@@ -1,6 +1,6 @@
 # Current Feature
 
-Dashboard UI Phase 2
+Dashboard UI Phase 3
 
 ## Status
 
@@ -12,19 +12,19 @@ In Progress
 
 <!-- Goals & requirements -->
 
-- Collapsible sidebar
-- Item types with links to /items/TYPE (e.g. /items/snippets)
-- Favorite collections
-- Most recent collections
-- Drawer on mobile
+- The main area to the right
+- Recent collections
+- Pinned items
+- 10 recent items
+- 4 stats cards at the top: items, collections, favorite items, favorite collections
 
 ## Notes
 
 <!-- Any extra notes -->
 
-- Spec: @context/features/dashboard-phase-2-spec.md
+- Spec: @context/features/dashboard-phase-3-spec.md
 - Data is imported directly from `src/lib/mock-data.ts` until the database is in place.
-- Desktop (>=1024px): sidebar collapses to an icon rail. Below 1024px it is a Sheet drawer (per the responsive table in project-overview).
+- Mock collections have no item relations, so collection cards show no type icons / type-colored border yet.
 
 ## History
 
@@ -32,3 +32,4 @@ In Progress
 
 - Project setup and boilerplate cleanup
 - Dashboard UI phase 1 (shadcn setup, /dashboard layout, top bar, placeholders)
+- Dashboard UI phase 2 (collapsible sidebar, type links, favorite/recent collections, mobile drawer)
