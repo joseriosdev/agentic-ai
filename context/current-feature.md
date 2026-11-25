@@ -1,31 +1,30 @@
 # Current Feature
 
-Dashboard UI Phase 1
+Dashboard UI Phase 2
 
 ## Status
 
 <!-- Not Started|In Progress|Completed -->
 
-Completed
+In Progress
 
 ## Goals
 
 <!-- Goals & requirements -->
 
-- ShadCN UI initialization and components
-- ShadCN component installation
-- Dashboard route at /dashboard
-- Main dashboard layout and any global styles
-- Dark mode by default
-- Top bar with search and new item button (display only)
-- Placeholder for sidebar and main area (h2 with "Sidebar" and "Main")
+- Collapsible sidebar
+- Item types with links to /items/TYPE (e.g. /items/snippets)
+- Favorite collections
+- Most recent collections
+- Drawer on mobile
 
 ## Notes
 
 <!-- Any extra notes -->
 
-- Spec: @context/features/dashboard-phase-1-spec.md
-- Layout lives in `src/app/dashboard/layout.tsx` so phase 2 can replace the sidebar placeholder without touching pages.
+- Spec: @context/features/dashboard-phase-2-spec.md
+- Data is imported directly from `src/lib/mock-data.ts` until the database is in place.
+- Desktop (>=1024px): sidebar collapses to an icon rail. Below 1024px it is a Sheet drawer (per the responsive table in project-overview).
 
 ## History
 

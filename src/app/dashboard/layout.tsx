@@ -1,4 +1,5 @@
-import TopBar from "@/components/layout/top-bar";
+import DashboardShell from "@/components/layout/dashboard-shell";
+import { getSidebarData } from "@/lib/sidebar-data";
 
 export default function DashboardLayout({
   children,
@@ -6,14 +7,6 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="flex h-screen flex-col">
-      <TopBar />
-      <div className="flex flex-1 overflow-hidden">
-        <aside className="w-64 border-r border-border p-6">
-          <h2 className="text-xl font-semibold">Sidebar</h2>
-        </aside>
-        <main className="flex-1 overflow-auto p-6">{children}</main>
-      </div>
-    </div>
+    <DashboardShell sidebarData={getSidebarData()}>{children}</DashboardShell>
   );
 }
