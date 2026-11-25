@@ -1,16 +1,25 @@
-import { FolderPlus, Plus, Search } from "lucide-react";
+import { FolderPlus, PanelLeft, Plus, Search } from "lucide-react";
+import Logo from "@/components/layout/logo";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-export default function TopBar() {
+interface TopBarProps {
+  onToggleSidebar: () => void;
+}
+
+export default function TopBar({ onToggleSidebar }: TopBarProps) {
   return (
-    <header className="flex h-14 shrink-0 items-center gap-4 border-b border-border px-6">
-      <div className="flex items-center gap-2">
-        <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
-          <span className="text-sm font-bold">DS</span>
-        </div>
-        <span className="text-lg font-semibold">DevStash</span>
-      </div>
+    <header className="flex h-14 shrink-0 items-center gap-3 border-b border-border px-4 lg:px-6">
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={onToggleSidebar}
+        aria-label="Toggle sidebar"
+      >
+        <PanelLeft />
+      </Button>
+
+      <Logo showName={false} className="lg:hidden" />
 
       <div className="relative flex max-w-md flex-1 items-center">
         <Search className="absolute left-3 h-4 w-4 text-muted-foreground" />
@@ -25,13 +34,13 @@ export default function TopBar() {
       </div>
 
       <div className="ml-auto flex items-center gap-2">
-        <Button variant="outline" size="sm">
+        <Button variant="outline" size="sm" aria-label="New Collection">
           <FolderPlus />
-          New Collection
+          <span className="hidden sm:inline">New Collection</span>
         </Button>
-        <Button size="sm">
+        <Button size="sm" aria-label="New Item">
           <Plus />
-          New Item
+          <span className="hidden sm:inline">New Item</span>
         </Button>
       </div>
     </header>
