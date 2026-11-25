@@ -6,7 +6,7 @@ Database Setup: Neon PostgreSQL + Prisma 7
 
 <!-- Not Started|In Progress|Completed -->
 
-In Progress
+Completed
 
 ## Goals
 
@@ -37,3 +37,4 @@ In Progress
 - Dashboard UI phase 1 (shadcn setup, /dashboard layout, top bar, placeholders)
 - Dashboard UI phase 2 (collapsible sidebar, type links, favorite/recent collections, mobile drawer)
 - Dashboard UI phase 3 (main area, stats cards, recent collections, pinned items, recent items)
+- Database setup (Neon PostgreSQL + Prisma 7, initial migration, system item types seed)
