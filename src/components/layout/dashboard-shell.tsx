@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import Sidebar from "@/components/layout/sidebar/sidebar";
+import { Suspense, useState } from "react";
+import Sidebar, { SidebarSkeleton } from "@/components/layout/sidebar/sidebar";
 import TopBar from "@/components/layout/top-bar";
 import {
   Sheet,
@@ -15,7 +15,7 @@ import type { SidebarData } from "@/types/dashboard";
 const DESKTOP_QUERY = "(min-width: 1024px)";
 
 interface DashboardShellProps {
-  sidebarData: SidebarData;
+  sidebarData: Promise<SidebarData>;
   children: React.ReactNode;
 }
 
@@ -42,7 +42,9 @@ export default function DashboardShell({
           collapsed ? "w-16" : "w-64",
         )}
       >
-        <Sidebar data={sidebarData} collapsed={collapsed} />
+        <Suspense fallback={<SidebarSkeleton collapsed={collapsed} />}>
+          <Sidebar data={sidebarData} collapsed={collapsed} />
+        </Suspense>
       </aside>
 
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
@@ -51,10 +53,12 @@ export default function DashboardShell({
           <SheetDescription className="sr-only">
             Item types and collections
           </SheetDescription>
-          <Sidebar
-            data={sidebarData}
-            onNavigate={() => setMobileOpen(false)}
-          />
+          <Suspense fallback={<SidebarSkeleton />}>
+            <Sidebar
+              data={sidebarData}
+              onNavigate={() => setMobileOpen(false)}
+            />
+          </Suspense>
         </SheetContent>
       </Sheet>
 

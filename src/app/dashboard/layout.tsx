@@ -6,6 +6,7 @@ export default function DashboardLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Not awaited: the shell streams the sidebar in behind a Suspense boundary.
   return (
     <DashboardShell sidebarData={getSidebarData()}>{children}</DashboardShell>
   );

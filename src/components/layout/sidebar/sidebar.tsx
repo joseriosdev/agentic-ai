@@ -1,10 +1,13 @@
 "use client";
 
-import { Folder, Star } from "lucide-react";
+import { use } from "react";
+import Link from "next/link";
+import { Circle, Folder, Star } from "lucide-react";
 import Logo from "@/components/layout/logo";
 import SidebarLink from "@/components/layout/sidebar/sidebar-link";
 import SidebarSection from "@/components/layout/sidebar/sidebar-section";
 import SidebarUser from "@/components/layout/sidebar/sidebar-user";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   ITEM_TYPE_ICONS,
   ITEM_TYPE_TEXT_COLORS,
@@ -12,8 +15,10 @@ import {
 import { cn } from "@/lib/utils";
 import type { SidebarCollection, SidebarData } from "@/types/dashboard";
 
+const SKELETON_LINK_COUNT = 10;
+
 interface SidebarProps {
-  data: SidebarData;
+  data: Promise<SidebarData>;
   collapsed?: boolean;
   onNavigate?: () => void;
 }
@@ -51,8 +56,17 @@ function CollectionGroup({
           key={collection.id}
           href={collection.href}
           label={collection.name}
-          icon={Folder}
-          iconClassName="text-muted-foreground"
+          icon={favorite ? Folder : Circle}
+          iconClassName={
+            favorite
+              ? "text-muted-foreground"
+              : cn(
+                  "scale-75 fill-current",
+                  collection.dominantType
+                    ? ITEM_TYPE_TEXT_COLORS[collection.dominantType]
+                    : "text-muted-foreground",
+                )
+          }
           collapsed={collapsed}
           onNavigate={onNavigate}
           trailing={
@@ -69,10 +83,12 @@ function CollectionGroup({
 }
 
 export default function Sidebar({
-  data,
+  data: dataPromise,
   collapsed = false,
   onNavigate,
 }: SidebarProps) {
+  const data = use(dataPromise);
+
   return (
     <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
       <div
@@ -121,10 +137,39 @@ export default function Sidebar({
             collapsed={collapsed}
             onNavigate={onNavigate}
           />
+          {!collapsed && (
+            <Link
+              href="/collections"
+              onClick={onNavigate}
+              className="px-2 pt-2 text-xs text-muted-foreground transition-colors duration-150 hover:text-foreground"
+            >
+              View all collections
+            </Link>
+          )}
         </SidebarSection>
       </nav>
 
       <SidebarUser user={data.user} collapsed={collapsed} />
+    </div>
+  );
+}
+
+export function SidebarSkeleton({ collapsed = false }: { collapsed?: boolean }) {
+  return (
+    <div className="flex h-full flex-col bg-sidebar">
+      <div
+        className={cn(
+          "flex h-14 shrink-0 items-center px-4",
+          collapsed && "justify-center px-0",
+        )}
+      >
+        <Logo showName={!collapsed} />
+      </div>
+      <div className={cn("flex flex-col gap-2 px-3 py-4", collapsed && "px-2")}>
+        {Array.from({ length: SKELETON_LINK_COUNT }, (_, i) => (
+          <Skeleton key={i} className="h-7 rounded-md" />
+        ))}
+      </div>
     </div>
   );
 }

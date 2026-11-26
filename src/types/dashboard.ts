@@ -12,6 +12,7 @@ export interface SidebarCollection {
   name: string;
   href: string;
   itemCount: number;
+  dominantType: ItemTypeName | null;
 }
 
 export interface SidebarUser {

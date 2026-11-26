@@ -1,10 +1,19 @@
 import type { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
-import { isItemTypeName } from "@/lib/constants/item-types";
+import {
+  ITEM_TYPE_ICONS,
+  isItemTypeName,
+} from "@/lib/constants/item-types";
 import { DEMO_USER_EMAIL } from "@/lib/db/collections";
-import type { DashboardItem, DashboardStats } from "@/types/dashboard";
+import type {
+  DashboardItem,
+  DashboardStats,
+  SidebarItemType,
+} from "@/types/dashboard";
 
 const RECENT_ITEMS_LIMIT = 10;
+// Display order for system types in the sidebar.
+const ITEM_TYPE_ORDER = Object.keys(ITEM_TYPE_ICONS);
 
 type ItemStats = Pick<DashboardStats, "totalItems" | "favoriteItems">;
 
@@ -70,4 +79,34 @@ export async function getItemStats(): Promise<ItemStats> {
     prisma.item.count({ where: { ...userItemsWhere, isFavorite: true } }),
   ]);
   return { totalItems, favoriteItems };
+}
+
+function capitalize(value: string): string {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+// System item types with the number of items the user has of each type.
+export async function getSidebarItemTypes(): Promise<SidebarItemType[]> {
+  const types = await prisma.itemType.findMany({
+    where: { isSystem: true },
+    select: {
+      name: true,
+      _count: { select: { items: { where: userItemsWhere } } },
+    },
+  });
+
+  return types
+    .flatMap((type) => {
+      const name = type.name;
+      if (!isItemTypeName(name)) return [];
+      return {
+        name,
+        label: `${capitalize(name)}s`,
+        href: `/items/${name}s`,
+        count: type._count.items,
+      };
+    })
+    .sort(
+      (a, b) => ITEM_TYPE_ORDER.indexOf(a.name) - ITEM_TYPE_ORDER.indexOf(b.name),
+    );
 }
