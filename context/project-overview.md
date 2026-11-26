@@ -196,14 +196,15 @@ erDiagram
 
 ```prisma
 // prisma/schema.prisma
+// Prisma 7: the connection URL lives in prisma.config.ts, not here.
 
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 // ============================================
@@ -394,9 +395,13 @@ model Tag {
 ```typescript
 // prisma/seed.ts
 
-import { PrismaClient } from '@prisma/client';
+import 'dotenv/config';
+import { PrismaNeon } from '@prisma/adapter-neon';
+import { PrismaClient } from '../src/generated/prisma/client';
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  adapter: new PrismaNeon({ connectionString: process.env.DATABASE_URL! }),
+});
 
 const systemItemTypes = [
   { name: 'snippet', icon: 'Code', color: '#3b82f6', isSystem: true },
