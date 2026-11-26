@@ -1,18 +1,46 @@
-# Current Feature
+# Current Feature: Auth Credentials - Email/Password Provider
 
 ## Status
 
 <!-- Not Started|In Progress|Completed -->
 
-Not Started
+In Progress
 
 ## Goals
 
 <!-- Goals & requirements -->
 
+- Add a Credentials provider for email/password sign-in
+- Hash passwords with `bcryptjs` (already installed)
+- Ensure the User model has a `password` field (already present as `password String?`, so no migration needed)
+- `auth.config.ts`: add a Credentials provider placeholder (`authorize: () => null`)
+- `auth.ts`: override the Credentials provider with real bcrypt validation
+- Create a registration API route `POST /api/auth/register`:
+  - Accept `name`, `email`, `password`, `confirmPassword`
+  - Validate that the passwords match
+  - Reject if the user already exists
+  - Hash the password with bcryptjs and create the user
+  - Return a success/error response
+
 ## Notes
 
 <!-- Any extra notes -->
+
+- Spec: `context/features/auth-spec-files/auth-phase-2-spec.md`
+- Split pattern: the placeholder in `auth.config.ts` keeps the proxy edge-safe; the DB/bcrypt logic lives only in `auth.ts`
+- Coding standards say to validate inputs with Zod, which is not installed yet
+- Testing:
+  1. Register via curl:
+     ```bash
+     curl -X POST http://localhost:3000/api/auth/register \
+       -H "Content-Type: application/json" \
+       -d '{"name":"Test","email":"test@test.com","password":"password123","confirmPassword":"password123"}'
+     ```
+  2. Go to `/api/auth/signin`
+  3. Sign in with email/password
+  4. Verify redirect to `/dashboard`
+  5. Verify GitHub OAuth still works
+- Reference: https://authjs.dev/getting-started/authentication/credentials
 
 ## History
 
