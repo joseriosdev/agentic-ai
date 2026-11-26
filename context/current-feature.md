@@ -6,7 +6,7 @@ Stats & Sidebar
 
 <!-- Not Started|In Progress|Completed -->
 
-In Progress
+Completed
 
 ## Goals
 
@@ -38,3 +38,4 @@ In Progress
 - Seed sample data (demo user, system item types, 5 collections with 18 items)
 - Dashboard collections (real collection data from Neon via Prisma, type-derived card borders and icons, collection stats)
 - Dashboard items (real pinned/recent items from Neon via Prisma, type-derived card icons/borders, item stats)
+- Stats & sidebar (real item types, collections and user in sidebar from Neon via Prisma, most-used type dots for recent collections, "View all collections" link)
