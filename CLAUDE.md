@@ -13,7 +13,19 @@ Read the following to get the full context of the project:
 
 ## Commands
 
-- **Dev server**: `npm run dev` (runs on http://localhost:3000)
+- **Dev server**: `npm run dev` (runs on http://localhost:3001)
 - **Build**: `npm run build`
 - **Production server**: `npm run start`
 - **Lint**: `npm run lint`
+- **Test**: `npm run test` (single run)
+- **Test watch**: `npm run test:watch`
+
+## Neon Database
+
+Production runs on the Neon project `devstash` (ID: `round-star-33836907`, Postgres 18, us-east-1), branch `production`, database `neondb`.
+
+**IMPORTANT:** Never run queries or migrations against the Neon production branch unless explicitly instructed to do so. When using the Neon MCP tools, work on a non-production branch, currently there is the `dev` branch on neon.
+
+Local development uses the Docker Postgres 18 container `devstash-db` on `localhost:5432` (the `DATABASE_URL` in `.env`), restored from a production dump. Use it for all local database work, including `prisma migrate dev`.
+
+**IMPORTANT:** Do not add Claude to any commit messages
