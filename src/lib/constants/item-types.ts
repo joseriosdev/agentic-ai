@@ -28,6 +28,10 @@ export const ITEM_TYPE_ICONS: Record<ItemTypeName, LucideIcon> = {
   link: Link,
 };
 
+export function isItemTypeName(value: string): value is ItemTypeName {
+  return value in ITEM_TYPE_ICONS;
+}
+
 export const ITEM_TYPE_TEXT_COLORS: Record<ItemTypeName, string> = {
   snippet: "text-snippet",
   prompt: "text-prompt",
