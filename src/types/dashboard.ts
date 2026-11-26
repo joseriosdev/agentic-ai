@@ -33,6 +33,8 @@ export interface DashboardCollection {
   href: string;
   itemCount: number;
   isFavorite: boolean;
+  typeNames: ItemTypeName[];
+  dominantType: ItemTypeName | null;
 }
 
 export interface DashboardItem {

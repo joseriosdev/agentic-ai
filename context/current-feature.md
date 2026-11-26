@@ -1,36 +1,32 @@
 # Current Feature
 
-Seed Sample Data
+Dashboard Collections
 
 ## Status
 
 <!-- Not Started|In Progress|Completed -->
 
-Completed
+In Progress
 
 ## Goals
 
 <!-- Goals & requirements -->
 
-- Rewrite `prisma/seed.ts` to populate the database with sample data for development and demos
-- Create a demo user (`demo@devstash.io`, "Demo User", password hashed with bcryptjs at 12 rounds, `isPro: false`, `emailVerified` set to now)
-- Seed the 7 system item types (snippet, prompt, command, note, file, image, link)
-- Seed 5 collections with items for the demo user:
-  - **React Patterns** — 3 TypeScript snippets (custom hooks, component patterns, utility functions)
-  - **AI Workflows** — 3 prompts (code review, documentation generation, refactoring assistance)
-  - **DevOps** — 1 snippet (Docker/CI config), 1 command (deployment), 2 links (real docs URLs)
-  - **Terminal Commands** — 4 commands (git, docker, process management, package managers)
-  - **Design Resources** — 4 links (CSS/Tailwind, component libraries, design systems, icon libraries; real URLs)
-- Seed must be safe to re-run (no duplicate data)
+- Replace the mock collection data in the dashboard main area with real data from the Neon database via Prisma
+- Create `src/lib/db/collections.ts` with data fetching functions
+- Fetch collections directly in the server component (no mock data from `src/lib/mock-data.ts`)
+- Keep the current design: 6 recent collection cards
+- Collection card border color derived from the most-used item type in that collection
+- Show small icons of all item types present in each collection
+- Update collection stats display to use real data
+- Do not add the items underneath the collections yet (later feature)
 
 ## Notes
 
 <!-- Any extra notes -->
 
-- Spec: @context/features/seed-spec.md
-- Schema: @prisma/schema.prisma
-- Run with `npx prisma db seed`; verify with `npx tsx scripts/test-db.ts`
-- Re-running the seed resets the demo user's collections and items; other users' data is untouched
+- Spec: @context/features/dashboard-collections-spec.md
+- Design reference: @context/screenshots/dashboard-ui-main.png (layout and design already exist)
 
 ## History
 
