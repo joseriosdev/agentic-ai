@@ -1,19 +1,18 @@
 import { Suspense } from "react";
-import { Clock, Pin } from "lucide-react";
+import { Clock } from "lucide-react";
 import DashboardStats, {
   DashboardStatsSkeleton,
 } from "@/components/dashboard/dashboard-stats";
-import ItemRow from "@/components/dashboard/item-row";
+import PinnedItems from "@/components/dashboard/pinned-items";
 import RecentCollections, {
   RecentCollectionsSkeleton,
 } from "@/components/dashboard/recent-collections";
+import RecentItems, {
+  RecentItemsSkeleton,
+} from "@/components/dashboard/recent-items";
 import SectionHeader from "@/components/dashboard/section-header";
-import { getPinnedItems, getRecentItems } from "@/lib/dashboard-data";
 
 export default function DashboardPage() {
-  const pinnedItems = getPinnedItems();
-  const recentItems = getRecentItems();
-
   return (
     <div className="mx-auto flex max-w-7xl flex-col gap-10">
       <header>
@@ -34,24 +33,16 @@ export default function DashboardPage() {
         </Suspense>
       </section>
 
-      {pinnedItems.length > 0 && (
-        <section>
-          <SectionHeader title="Pinned" icon={Pin} />
-          <div className="flex flex-col gap-3">
-            {pinnedItems.map((item) => (
-              <ItemRow key={item.id} item={item} />
-            ))}
-          </div>
-        </section>
-      )}
+      {/* No fallback: the section is hidden entirely when nothing is pinned. */}
+      <Suspense fallback={null}>
+        <PinnedItems />
+      </Suspense>
 
       <section>
         <SectionHeader title="Recent Items" icon={Clock} />
-        <div className="flex flex-col gap-3">
-          {recentItems.map((item) => (
-            <ItemRow key={item.id} item={item} />
-          ))}
-        </div>
+        <Suspense fallback={<RecentItemsSkeleton />}>
+          <RecentItems />
+        </Suspense>
       </section>
     </div>
   );

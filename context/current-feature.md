@@ -1,6 +1,6 @@
 # Current Feature
 
-Dashboard Collections
+Dashboard Items
 
 ## Status
 
@@ -12,20 +12,19 @@ In Progress
 
 <!-- Goals & requirements -->
 
-- Replace the mock collection data in the dashboard main area with real data from the Neon database via Prisma
-- Create `src/lib/db/collections.ts` with data fetching functions
-- Fetch collections directly in the server component (no mock data from `src/lib/mock-data.ts`)
-- Keep the current design: 6 recent collection cards
-- Collection card border color derived from the most-used item type in that collection
-- Show small icons of all item types present in each collection
-- Update collection stats display to use real data
-- Do not add the items underneath the collections yet (later feature)
+- Replace the mock item data in the dashboard main area (pinned and recent items) with real data from the Neon database via Prisma
+- Create `src/lib/db/items.ts` with data fetching functions
+- Fetch items directly in server components (no mock data from `src/lib/mock-data.ts`)
+- Item card icon/border derived from the item type
+- Display item type tags and everything else currently shown on the item cards
+- If there are no pinned items, don't display the pinned section at all
+- Update item stats display to use real data
 
 ## Notes
 
 <!-- Any extra notes -->
 
-- Spec: @context/features/dashboard-collections-spec.md
+- Spec: @context/features/dashboard-items-spec.md
 - Design reference: @context/screenshots/dashboard-ui-main.png (layout and design already exist)
 
 ## History
@@ -38,3 +37,4 @@ In Progress
 - Dashboard UI phase 3 (main area, stats cards, recent collections, pinned items, recent items)
 - Database setup (Neon PostgreSQL + Prisma 7, initial migration, system item types seed)
 - Seed sample data (demo user, system item types, 5 collections with 18 items)
+- Dashboard collections (real collection data from Neon via Prisma, type-derived card borders and icons, collection stats)

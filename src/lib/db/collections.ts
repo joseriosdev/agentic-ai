@@ -3,7 +3,7 @@ import { isItemTypeName, type ItemTypeName } from "@/lib/constants/item-types";
 import type { DashboardCollection, DashboardStats } from "@/types/dashboard";
 
 // No auth yet: dashboard data belongs to the seeded demo user.
-const DEMO_USER_EMAIL = "demo@devstash.io";
+export const DEMO_USER_EMAIL = "demo@devstash.io";
 const RECENT_COLLECTIONS_LIMIT = 6;
 
 type CollectionStats = Pick<
