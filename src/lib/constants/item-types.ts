@@ -28,6 +28,9 @@ export const ITEM_TYPE_ICONS: Record<ItemTypeName, LucideIcon> = {
   link: Link,
 };
 
+// Types that require a Pro subscription.
+export const PRO_ITEM_TYPES: ReadonlySet<ItemTypeName> = new Set(["file", "image"]);
+
 export function isItemTypeName(value: string): value is ItemTypeName {
   return value in ITEM_TYPE_ICONS;
 }

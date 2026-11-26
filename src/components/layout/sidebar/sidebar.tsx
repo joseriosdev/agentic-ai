@@ -7,10 +7,12 @@ import Logo from "@/components/layout/logo";
 import SidebarLink from "@/components/layout/sidebar/sidebar-link";
 import SidebarSection from "@/components/layout/sidebar/sidebar-section";
 import SidebarUser from "@/components/layout/sidebar/sidebar-user";
+import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   ITEM_TYPE_ICONS,
   ITEM_TYPE_TEXT_COLORS,
+  PRO_ITEM_TYPES,
 } from "@/lib/constants/item-types";
 import { cn } from "@/lib/utils";
 import type { SidebarCollection, SidebarData } from "@/types/dashboard";
@@ -33,6 +35,17 @@ interface CollectionGroupProps {
 
 function Count({ value }: { value: number }) {
   return <span className="text-xs text-muted-foreground">{value}</span>;
+}
+
+function ProBadge() {
+  return (
+    <Badge
+      variant="outline"
+      className="h-4 px-1.5 text-[10px] font-medium tracking-wider text-muted-foreground"
+    >
+      PRO
+    </Badge>
+  );
 }
 
 function CollectionGroup({
@@ -116,7 +129,12 @@ export default function Sidebar({
               iconClassName={ITEM_TYPE_TEXT_COLORS[type.name]}
               collapsed={collapsed}
               onNavigate={onNavigate}
-              trailing={<Count value={type.count} />}
+              trailing={
+                <>
+                  {PRO_ITEM_TYPES.has(type.name) && <ProBadge />}
+                  <Count value={type.count} />
+                </>
+              }
             />
           ))}
         </SidebarSection>
