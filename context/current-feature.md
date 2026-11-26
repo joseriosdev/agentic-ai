@@ -6,7 +6,7 @@ Pro Badge Sidebar
 
 <!-- Not Started|In Progress|Completed -->
 
-In Progress
+Completed
 
 ## Goals
 
@@ -37,3 +37,4 @@ In Progress
 - Dashboard collections (real collection data from Neon via Prisma, type-derived card borders and icons, collection stats)
 - Dashboard items (real pinned/recent items from Neon via Prisma, type-derived card icons/borders, item stats)
 - Stats & sidebar (real item types, collections and user in sidebar from Neon via Prisma, most-used type dots for recent collections, "View all collections" link)
+- Pro badge sidebar (subtle shadcn "PRO" badge on the Files and Images sidebar types)
