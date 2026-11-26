@@ -1,3 +1,4 @@
+import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { isItemTypeName, type ItemTypeName } from "@/lib/constants/item-types";
 import type {
@@ -6,8 +7,6 @@ import type {
   SidebarCollection,
 } from "@/types/dashboard";
 
-// No auth yet: dashboard data belongs to the seeded demo user.
-export const DEMO_USER_EMAIL = "demo@devstash.io";
 const RECENT_COLLECTIONS_LIMIT = 6;
 const SIDEBAR_RECENT_COLLECTIONS_LIMIT = 5;
 
@@ -21,24 +20,54 @@ interface SidebarCollections {
   recentCollections: SidebarCollection[];
 }
 
-// Type names ordered by how many items use them (most-used first).
-function rankTypesByUsage(typeNames: string[]): ItemTypeName[] {
-  const counts = new Map<ItemTypeName, number>();
-  for (const name of typeNames) {
-    if (isItemTypeName(name)) {
-      counts.set(name, (counts.get(name) ?? 0) + 1);
-    }
+interface CollectionTypeCount {
+  collectionId: string;
+  typeName: string;
+}
+
+const sidebarCollectionSelect = {
+  id: true,
+  name: true,
+  _count: { select: { items: true } },
+} satisfies Prisma.CollectionSelect;
+
+type SidebarCollectionRecord = Prisma.CollectionGetPayload<{
+  select: typeof sidebarCollectionSelect;
+}>;
+
+// Per collection, its item type names ordered by usage (most-used first).
+// Counting happens in the database, so item rows are never loaded.
+async function getRankedTypesByCollection(
+  collectionIds: string[],
+): Promise<Map<string, ItemTypeName[]>> {
+  const ranked = new Map<string, ItemTypeName[]>();
+  if (collectionIds.length === 0) return ranked;
+
+  const rows = await prisma.$queryRaw<CollectionTypeCount[]>`
+    SELECT ic."collectionId", it."name" AS "typeName"
+    FROM "item_collections" ic
+    JOIN "items" i ON i."id" = ic."itemId"
+    JOIN "item_types" it ON it."id" = i."itemTypeId"
+    WHERE ic."collectionId" IN (${Prisma.join(collectionIds)})
+    GROUP BY ic."collectionId", it."name"
+    ORDER BY COUNT(*) DESC, it."name" ASC
+  `;
+
+  for (const { collectionId, typeName } of rows) {
+    if (!isItemTypeName(typeName)) continue;
+    const typeNames = ranked.get(collectionId) ?? [];
+    typeNames.push(typeName);
+    ranked.set(collectionId, typeNames);
   }
-  return [...counts.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .map(([name]) => name);
+  return ranked;
 }
 
 export async function getRecentCollections(
+  userId: string,
   limit = RECENT_COLLECTIONS_LIMIT,
 ): Promise<DashboardCollection[]> {
   const collections = await prisma.collection.findMany({
-    where: { user: { email: DEMO_USER_EMAIL } },
+    where: { userId },
     orderBy: { updatedAt: "desc" },
     take: limit,
     select: {
@@ -46,22 +75,21 @@ export async function getRecentCollections(
       name: true,
       description: true,
       isFavorite: true,
-      items: {
-        select: { item: { select: { itemType: { select: { name: true } } } } },
-      },
+      _count: { select: { items: true } },
     },
   });
+  const rankedTypes = await getRankedTypesByCollection(
+    collections.map((collection) => collection.id),
+  );
 
   return collections.map((collection) => {
-    const typeNames = rankTypesByUsage(
-      collection.items.map(({ item }) => item.itemType.name),
-    );
+    const typeNames = rankedTypes.get(collection.id) ?? [];
     return {
       id: collection.id,
       name: collection.name,
       description: collection.description ?? "",
       href: `/collections/${collection.id}`,
-      itemCount: collection.items.length,
+      itemCount: collection._count.items,
       isFavorite: collection.isFavorite,
       typeNames,
       dominantType: typeNames[0] ?? null,
@@ -69,52 +97,50 @@ export async function getRecentCollections(
   });
 }
 
-export async function getCollectionStats(): Promise<CollectionStats> {
-  const where = { user: { email: DEMO_USER_EMAIL } };
+export async function getCollectionStats(
+  userId: string,
+): Promise<CollectionStats> {
   const [totalCollections, favoriteCollections] = await Promise.all([
-    prisma.collection.count({ where }),
-    prisma.collection.count({ where: { ...where, isFavorite: true } }),
+    prisma.collection.count({ where: { userId } }),
+    prisma.collection.count({ where: { userId, isFavorite: true } }),
   ]);
   return { totalCollections, favoriteCollections };
 }
 
 // Favorites plus the most recently updated non-favorite collections.
 export async function getSidebarCollections(
+  userId: string,
   recentLimit = SIDEBAR_RECENT_COLLECTIONS_LIMIT,
 ): Promise<SidebarCollections> {
-  const collections = await prisma.collection.findMany({
-    where: { user: { email: DEMO_USER_EMAIL } },
-    orderBy: { updatedAt: "desc" },
-    select: {
-      id: true,
-      name: true,
-      isFavorite: true,
-      items: {
-        select: { item: { select: { itemType: { select: { name: true } } } } },
-      },
-    },
-  });
+  const [favorites, recents] = await Promise.all([
+    prisma.collection.findMany({
+      where: { userId, isFavorite: true },
+      orderBy: { updatedAt: "desc" },
+      select: sidebarCollectionSelect,
+    }),
+    prisma.collection.findMany({
+      where: { userId, isFavorite: false },
+      orderBy: { updatedAt: "desc" },
+      take: recentLimit,
+      select: sidebarCollectionSelect,
+    }),
+  ]);
+  const rankedTypes = await getRankedTypesByCollection(
+    [...favorites, ...recents].map((collection) => collection.id),
+  );
 
   const toSidebarCollection = (
-    collection: (typeof collections)[number],
+    collection: SidebarCollectionRecord,
   ): SidebarCollection => ({
     id: collection.id,
     name: collection.name,
     href: `/collections/${collection.id}`,
-    itemCount: collection.items.length,
-    dominantType:
-      rankTypesByUsage(
-        collection.items.map(({ item }) => item.itemType.name),
-      )[0] ?? null,
+    itemCount: collection._count.items,
+    dominantType: rankedTypes.get(collection.id)?.[0] ?? null,
   });
 
   return {
-    favoriteCollections: collections
-      .filter((collection) => collection.isFavorite)
-      .map(toSidebarCollection),
-    recentCollections: collections
-      .filter((collection) => !collection.isFavorite)
-      .slice(0, recentLimit)
-      .map(toSidebarCollection),
+    favoriteCollections: favorites.map(toSidebarCollection),
+    recentCollections: recents.map(toSidebarCollection),
   };
 }

@@ -1,28 +1,29 @@
 # Current Feature
 
-Pro Badge Sidebar
+DB User Scoping & Collection Query Fixes
 
 ## Status
 
 <!-- Not Started|In Progress|Completed -->
 
-Completed
+In Progress
 
 ## Goals
 
 <!-- Goals & requirements -->
 
-- Show a PRO badge next to the Files and Images types in the sidebar
-- Use the shadcn/ui `Badge` component
-- Keep the badge clean and subtle
-- Badge text is all uppercase: "PRO"
+- Scope every data query by an explicit `userId` instead of a hard-coded demo email
+- Add a single cached `getCurrentUserId()` helper (demo user now, session user once auth exists)
+- Move `DEMO_USER_EMAIL` out of `src/lib/db/collections.ts`
+- Stop loading every item row to compute collection item counts and dominant types
+- Apply the sidebar's recent-collections limit in the database, not in JS
 
 ## Notes
 
 <!-- Any extra notes -->
 
-- Spec: @context/features/add-pro-badge-sidebar.md
-- File and Image are Pro-only types (see project overview)
+- From the code-scanner report (High priority findings 1 and 2)
+- Item counts via Prisma `_count`; per-type counts via one grouped, parameterized query
 
 ## History
 

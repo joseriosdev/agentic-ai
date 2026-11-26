@@ -1,6 +1,7 @@
 import { connection } from "next/server";
 import StatsCards from "@/components/dashboard/stats-cards";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getCurrentUserId } from "@/lib/current-user";
 import { getCollectionStats } from "@/lib/db/collections";
 import { getItemStats } from "@/lib/db/items";
 
@@ -9,9 +10,10 @@ const STAT_CARD_COUNT = 4;
 export default async function DashboardStats() {
   // Per-user data: render at request time.
   await connection();
+  const userId = await getCurrentUserId();
   const [itemStats, collectionStats] = await Promise.all([
-    getItemStats(),
-    getCollectionStats(),
+    getItemStats(userId),
+    getCollectionStats(userId),
   ]);
 
   return <StatsCards stats={{ ...itemStats, ...collectionStats }} />;

@@ -1,6 +1,7 @@
 import { connection } from "next/server";
 import CollectionCard from "@/components/dashboard/collection-card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getCurrentUserId } from "@/lib/current-user";
 import { getRecentCollections } from "@/lib/db/collections";
 
 const GRID_CLASSES = "grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3";
@@ -9,7 +10,7 @@ const SKELETON_CARD_COUNT = 6;
 export default async function RecentCollections() {
   // Per-user data: render at request time.
   await connection();
-  const collections = await getRecentCollections();
+  const collections = await getRecentCollections(await getCurrentUserId());
 
   if (collections.length === 0) {
     return (

@@ -4,7 +4,6 @@ import {
   ITEM_TYPE_ICONS,
   isItemTypeName,
 } from "@/lib/constants/item-types";
-import { DEMO_USER_EMAIL } from "@/lib/db/collections";
 import type {
   DashboardItem,
   DashboardStats,
@@ -16,8 +15,6 @@ const RECENT_ITEMS_LIMIT = 10;
 const ITEM_TYPE_ORDER = Object.keys(ITEM_TYPE_ICONS);
 
 type ItemStats = Pick<DashboardStats, "totalItems" | "favoriteItems">;
-
-const userItemsWhere = { user: { email: DEMO_USER_EMAIL } };
 
 const dashboardItemSelect = {
   id: true,
@@ -52,9 +49,11 @@ function toDashboardItems(records: DashboardItemRecord[]): DashboardItem[] {
   });
 }
 
-export async function getPinnedItems(): Promise<DashboardItem[]> {
+export async function getPinnedItems(
+  userId: string,
+): Promise<DashboardItem[]> {
   const items = await prisma.item.findMany({
-    where: { ...userItemsWhere, isPinned: true },
+    where: { userId, isPinned: true },
     orderBy: { createdAt: "desc" },
     select: dashboardItemSelect,
   });
@@ -62,10 +61,11 @@ export async function getPinnedItems(): Promise<DashboardItem[]> {
 }
 
 export async function getRecentItems(
+  userId: string,
   limit = RECENT_ITEMS_LIMIT,
 ): Promise<DashboardItem[]> {
   const items = await prisma.item.findMany({
-    where: userItemsWhere,
+    where: { userId },
     orderBy: { createdAt: "desc" },
     take: limit,
     select: dashboardItemSelect,
@@ -73,10 +73,10 @@ export async function getRecentItems(
   return toDashboardItems(items);
 }
 
-export async function getItemStats(): Promise<ItemStats> {
+export async function getItemStats(userId: string): Promise<ItemStats> {
   const [totalItems, favoriteItems] = await Promise.all([
-    prisma.item.count({ where: userItemsWhere }),
-    prisma.item.count({ where: { ...userItemsWhere, isFavorite: true } }),
+    prisma.item.count({ where: { userId } }),
+    prisma.item.count({ where: { userId, isFavorite: true } }),
   ]);
   return { totalItems, favoriteItems };
 }
@@ -86,12 +86,14 @@ function capitalize(value: string): string {
 }
 
 // System item types with the number of items the user has of each type.
-export async function getSidebarItemTypes(): Promise<SidebarItemType[]> {
+export async function getSidebarItemTypes(
+  userId: string,
+): Promise<SidebarItemType[]> {
   const types = await prisma.itemType.findMany({
     where: { isSystem: true },
     select: {
       name: true,
-      _count: { select: { items: { where: userItemsWhere } } },
+      _count: { select: { items: { where: { userId } } } },
     },
   });
 
