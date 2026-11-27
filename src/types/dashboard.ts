@@ -18,6 +18,7 @@ export interface SidebarCollection {
 export interface SidebarUser {
   name: string;
   email: string;
+  image: string | null;
 }
 
 export interface DashboardStats {

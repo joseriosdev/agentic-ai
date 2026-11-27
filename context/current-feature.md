@@ -1,4 +1,4 @@
-# Current Feature: Auth Credentials - Email/Password Provider
+# Current Feature: Auth UI - Sign In, Register & Sign Out
 
 ## Status
 
@@ -10,37 +10,41 @@ In Progress
 
 <!-- Goals & requirements -->
 
-- Add a Credentials provider for email/password sign-in
-- Hash passwords with `bcryptjs` (already installed)
-- Ensure the User model has a `password` field (already present as `password String?`, so no migration needed)
-- `auth.config.ts`: add a Credentials provider placeholder (`authorize: () => null`)
-- `auth.ts`: override the Credentials provider with real bcrypt validation
-- Create a registration API route `POST /api/auth/register`:
-  - Accept `name`, `email`, `password`, `confirmPassword`
-  - Validate that the passwords match
-  - Reject if the user already exists
-  - Hash the password with bcryptjs and create the user
-  - Return a success/error response
+- Replace the default NextAuth pages with custom UI
+- Sign in page (`/sign-in`):
+  - Email and password fields
+  - "Sign in with GitHub" button
+  - Link to the register page
+  - Form validation and error display
+- Register page (`/register`):
+  - Name, email, password and confirm password fields
+  - Validation (passwords match, email format)
+  - Submit to `/api/auth/register`
+  - Redirect to `/sign-in` on success
+- Bottom of sidebar:
+  - User avatar (GitHub image, or initials as a fallback)
+  - User name
+  - Dropdown/dropup on avatar click with a "Sign out" link
+  - Clicking the icon goes to `/profile`
+- Reusable avatar component that handles both cases (image or initials, e.g. "Brad Traversy" → "BT")
 
 ## Notes
 
 <!-- Any extra notes -->
 
-- Spec: `context/features/auth-spec-files/auth-phase-2-spec.md`
-- Split pattern: the placeholder in `auth.config.ts` keeps the proxy edge-safe; the DB/bcrypt logic lives only in `auth.ts`
-- Coding standards say to validate inputs with Zod, which is not installed yet
+- Spec: `context/features/auth-spec-files/auth-phase-3-spec.md`
+- Point NextAuth `pages.signIn` at `/sign-in` so protected routes redirect to the custom page
+- Existing sidebar user block lives in `src/components/layout/sidebar/sidebar-user.tsx`
+- shadcn `avatar` and `dropdown-menu` components are not installed yet (current ui: badge, button, card, collapsible, input, sheet, skeleton)
+- `/profile` route does not exist yet; the avatar link will point to it
 - Testing:
-  1. Register via curl:
-     ```bash
-     curl -X POST http://localhost:3000/api/auth/register \
-       -H "Content-Type: application/json" \
-       -d '{"name":"Test","email":"test@test.com","password":"password123","confirmPassword":"password123"}'
-     ```
-  2. Go to `/api/auth/signin`
-  3. Sign in with email/password
-  4. Verify redirect to `/dashboard`
-  5. Verify GitHub OAuth still works
-- Reference: https://authjs.dev/getting-started/authentication/credentials
+  1. Go to `/sign-in` and verify the custom page renders
+  2. Sign in with GitHub and verify the flow works
+  3. Sign in with email/password and verify the flow works
+  4. Verify the avatar shows (GitHub image or initials)
+  5. Click the avatar and verify the dropdown appears
+  6. Click "Sign out" and verify logout and redirect
+  7. Go to `/register`, create a new account, and verify redirect to `/sign-in`
 
 ## History
 
@@ -58,3 +62,4 @@ In Progress
 - Pro badge sidebar (subtle shadcn "PRO" badge on the Files and Images sidebar types)
 - DB user scoping & collection query fixes (cached `getCurrentUserId()` helper in `src/lib/current-user.ts`, userId-scoped queries, `_count` item counts, DB-side recent-collections limit)
 - Auth phase 1 (NextAuth v5 + GitHub OAuth, split edge-safe config with Prisma adapter and JWT sessions, `/dashboard/*` protected via `src/proxy.ts`, `session.user.id` type)
+- Auth phase 2 (Credentials provider with bcryptjs: placeholder in edge-safe `auth.config.ts`, real validation in `auth.ts`, `POST /api/auth/register` route)
